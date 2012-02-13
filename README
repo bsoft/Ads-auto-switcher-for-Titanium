@@ -1,0 +1,51 @@
+Ads Auto Switcher ©BSoft&Co 2012
+--------------------------------
+
+This script allows you to use both iAds and Admob at the same place within
+a ©Titanium iOS project.
+
+It works with ti.admob module (1.1) which can be found here :
+https://github.com/appcelerator/titanium_modules/tree/master/admob/mobile/ios
+
+
+Per default, Admob is always shown, while iAds is shown (on top of admob) and 
+hidden during some seconds.
+The script manages to move or to resize an UI object when ads are visible.
+
+Be carefull with admob when closing a window. The module ti.admob is not 
+really good to stop a refreshing admob.. :/
+-------------------------------------------------------------------------------
+
+
+history:
+--------
+v1.22
+    - delete 'adDelay' parameter
+v1.21
+    + ads.typeMove = '' for fixed ads. Set ads.obj2Move = null
+V1.2
+    + ads.useAdmob = true/false : to enabled or not admob. If false, only iAds 
+    is shown
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+
+How To use : 
+------------
+Ti.include('ads.js');
+ads.admobPublisherId = 'myadmobKey'; 
+ads.iAdsShowHide = "iAdsShowHide.xx";
+ads.init(tableViewObj,0,0,'top');
+// --> This inits an ad positionned at top = 0. The tableview name tableViewObj 
+// will be moved down at top = 50 when an ad is visible.
+ads.showAdvert();
+//setTimeout(ads.showAdvert, 2000);    
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+
+
+-------------------------------------------------------------------------------
+Ads Auto Switcher is licensed under the Apache Public License (Version 2). 
+Please see the LICENSE file for the full license.
+
