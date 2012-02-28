@@ -1,13 +1,14 @@
 /*
-Ads Auto Switcher ©BSoft&Co 2012
---------------------------------
+Ads Auto Switcher - ©BSoft&Co 2012
+----------------------------------
 
 This script allows you to use both iAds and Admob at the same place within
 a ©Titanium iOS project.
 
-It works with ti.admob module (1.1) which can be found here :
+It works with ti.admob module (1.2) which can be found here :
 https://github.com/appcelerator/titanium_modules/tree/master/admob/mobile/ios
 
+For now, only iphone's screen size is managed, in portrait orientation.
 
 Per default, Admob is always shown, while iAds is shown (on top of admob) and 
 hidden during some seconds.
@@ -20,6 +21,10 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v1.23
+    + Now compatible with ti.admob 1.2
+    + Add the values 'adDateOfBirth', 'adGender', 'adKeywords' and 'adTesting' for admob
+    + Add the possibility to use or not iAds, like useAdmob : ads.useIads
 v1.22
     - delete 'adDelay' parameter
 v1.21
@@ -53,47 +58,61 @@ Please see the LICENSE file for the full license.
 */
 
 Titanium.Admob = Ti.Admob = require('ti.admob');
-
+/*
+//iads size 320,50 // 480,32 // ipad : 768,66 // 1024,66
+// Size for the ads to print
+var adSize = [{w:320,h:50},{w:300,h:250},{w:468,h:60},{w:728,h:90}];
+*/
 var ads = {};
 (function() {
-	// The object to be moved/resized when an ad is visible
+    // The object to be moved/resized when an ad is visible
     ads.obj2Move = {}; 
-	// Top position (px) of the object when no ads on screen (typeMove = 'top')
-	// || Top ads position (typeMove = 'height')
+    // Top position (px) of the object when no ads on screen (typeMove = 'top')
+    // || Top ads position (typeMove = 'height')
     ads.topPos = 0; 
-	// Max height (px) for the object when no ads (don't mind when typeMove = 'top'
+    // Max height (px) for the object when no ads (don't mind when typeMove = 'top'
     ads.objHmax = 460; 
-	// Top margin (px) for the object to move (optional)
+    // Top margin (px) for the object to move (optional)
     ads.objMargin = 0; 
-	// Type of move for the object (top/height/''). 
-	// - top : To move the top position of the object
-	// - height : To resize the height of the object, 
-	// - '' : To have a fixed ads position. (If so, also set obj2Move = null)
+    // Type of move for the object (top/height/''). 
+    // - top : To move the top position of the object
+    // - height : To resize the height of the object, 
+    // - '' : To have a fixed ads position. (If so, also set obj2Move = null)
     ads.typeMove = 'top'; 
-	// Milliseconds before starting iads
+    // To enabled or not admob. Don't forget to change ads.iadsStartDelay if no admob
+    ads.useAdmob = true; 
+    // To enabled or not iAds. 
+    ads.useIads = true; 
+    // Milliseconds before starting iads
     ads.iadsStartDelay = 30000; 
-	// Initial top position for the iads banner
+    // Initial top position for the iads banner
     ads.iadsTopInit = -50; 
-	// Initial top position for the admob banner
+    // Initial top position for the admob banner
     ads.admobTopInit = -50; 
-	// The event's name to be fired. It's recommanded to use one per ads's instance.
+    // The event's name to be fired. It's recommanded to use one per ads's instance.
     ads.iAdsShowHide = 'iAdsShowHide'; 
-	// Required : your admob id
+    // Required : your admob id
     ads.admobPublisherId = null; 
-	// To enabled or not admob. Don't forget to change ads.iadsStartDelay if no admob
-	ads.useAdmob = true; 
-	// admob's backgroundColor 
-	ads.adBackgroundColor =  "#FDFEFD";
-	// iAds's border color
-	ads.iAdsBorderColor = '#FDFEFD';
-	// iAds's backgroundColor
-	ads.iAdsBackgroundColor = '#FDFEFD';
-	// How long iAds is visible (milliseconds)
-	ads.iAdsTimeToShow = 14000;
-	// How long iAds is hidden (milliseconds)
-	ads.iAdsTimeToHide = 30000;
-	
-	// init values
+    // Date of birth, to better target the ads, new Date(1985, 10, 1, 12, 1, 1),
+    ads.adDateOfBirth = '';
+    // Gender 'male' or 'female'
+    ads.adGender  = '';
+    // Keywords about the ads to print
+    ads.adKeywords = '';
+    // Test mode for admob
+    ads.adTesting = false;
+    // admob's backgroundColor 
+    ads.adBackgroundColor =  "#FDFEFD";
+    // iAds's border color
+    ads.iAdsBorderColor = '#FDFEFD';
+    // iAds's backgroundColor
+    ads.iAdsBackgroundColor = '#FDFEFD';
+    // How long iAds is visible (milliseconds)
+    ads.iAdsTimeToShow = 14000;
+    // How long iAds is hidden (milliseconds)
+    ads.iAdsTimeToHide = 30000;
+    
+    // init values
     ads.iAdsVisible = false;
     ads.adMobVisible = false;
     ads.admob = null;
@@ -162,13 +181,13 @@ var ads = {};
                         setTimeout(function() { iads.fireEvent(ads.iAdsShowHide); Ti.API.info("admob not visible, let iads for 20s more"); }, 20000);
                     }
                     else {
-						if (ads.typeMove != '') {
-							if (ads.typeMove === 'top') {
-								ads.obj2Move.animate({top:ads.topPos+50+ads.objMargin,duration:500}); 
-							} else {
-								ads.obj2Move.animate({height:ads.objHmax-50,duration:500}); 
-							}
-						}	
+                        if (ads.typeMove != '') {
+                            if (ads.typeMove === 'top') {
+                                ads.obj2Move.animate({top:ads.topPos+50+ads.objMargin,duration:500}); 
+                            } else {
+                                ads.obj2Move.animate({height:ads.objHmax-50,duration:500}); 
+                            }
+                        }   
                         iads.animate({top:ads.iadsTopInit, duration:500}, function() { iads.hide(); Ti.API.info("ads.showiAds - hide iads"); });
                         // hide iAds for X s
                         setTimeout(function() { iads.fireEvent(ads.iAdsShowHide); Ti.API.info("ads.showiAds - fire iAdsShowHide to show iAds"); }, ads.iAdsTimeToHide);
@@ -203,8 +222,11 @@ var ads = {};
                 left: 0,
                 width: 320, // required
                 height: 50, // required
-                testing: false,
+                testing: ads.adTesting,
                 adBackgroundColor: ads.adBackgroundColor,
+                dateOfBirth: ads.adDateOfBirth, //new Date(1985, 10, 1, 12, 1, 1),
+                gender: ads.adGender, //'male',
+                keywords: ads.adKeywords, //'',
                 refreshAd:15.0 //not working with actual ti.admob module (1.1), set refresh time within admob site
             });
             ads.admob.addEventListener('didFailToReceiveAd', function() {
@@ -255,10 +277,8 @@ var ads = {};
 // ----------------------------------------------------------------------------
     ads.showAdvert = function() {
         if (Titanium.Network.online) {
-            if (ads.useAdmob) {
-				ads.buildAdmob();
-			}
-            setTimeout(ads.showiAds, ads.iadsStartDelay);
+            if (ads.useAdmob) { ads.buildAdmob(); }
+            if (ads.useIads) { setTimeout(ads.showiAds, ads.iadsStartDelay); }  
         }
         else { // No internet connection. Retry in 30sec
             setTimeout(ads.showAdvert, 30000);  
