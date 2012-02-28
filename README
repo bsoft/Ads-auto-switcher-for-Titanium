@@ -1,12 +1,13 @@
-Ads Auto Switcher ©BSoft&Co 2012
---------------------------------
+Ads Auto Switcher - ©BSoft&Co 2012
+----------------------------------
 
 This script allows you to use both iAds and Admob at the same place within
 a ©Titanium iOS project.
 
-It works with ti.admob module (1.1) which can be found here :
+It works with ti.admob module (1.2) which can be found here :
 https://github.com/appcelerator/titanium_modules/tree/master/admob/mobile/ios
 
+For now, only iphone's screen size is managed, in portrait orientation.
 
 Per default, Admob is always shown, while iAds is shown (on top of admob) and 
 hidden during some seconds.
@@ -19,6 +20,10 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v1.23
+    + Now compatible with ti.admob 1.2
+    + Add the values 'adDateOfBirth', 'adGender', 'adKeywords' and 'adTesting' for admob
+    + Add the possibility to use or not iAds, like useAdmob : ads.useIads
 v1.22
     - delete 'adDelay' parameter
 v1.21
