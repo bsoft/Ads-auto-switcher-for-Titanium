@@ -62,6 +62,8 @@ Titanium.Admob = Ti.Admob = require('ti.admob');
 //iads size 320,50 // 480,32 // ipad : 768,66 // 1024,66
 // Size for the ads to print
 var adSize = [{w:320,h:50},{w:300,h:250},{w:468,h:60},{w:728,h:90}];
+
+
 */
 var ads = {};
 (function() {
@@ -76,7 +78,10 @@ var ads = {};
     ads.objMargin = 0; 
     // Type of move for the object (top/height/''). 
     // - top : To move the top position of the object
-    // - height : To resize the height of the object, 
+    // - height : To resize the height of the object.
+    //     /|\ : If the position of the object to resized is defined with TOP, the object will be resized from its bottom.
+    //         Its TOP position stay fixed!
+    //         So to resized the object from the top, with a fxed bottom position, it should be defined with bottom position.   
     // - '' : To have a fixed ads position. (If so, also set obj2Move = null)
     ads.typeMove = 'top'; 
     // To enabled or not admob. Don't forget to change ads.iadsStartDelay if no admob
