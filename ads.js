@@ -21,8 +21,11 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v1.24.01
+    + Change 'auto' size for iAds to Ti.UI.SIZE to be ready with Ti sdk 2
+    ± Only load ti.admob if needed
 v1.23
-    + Now compatible with ti.admob 1.2
+    + Now compatible with ti.admob >= 1.2
     + Add the values 'adDateOfBirth', 'adGender', 'adKeywords' and 'adTesting' for admob
     + Add the possibility to use or not iAds, like useAdmob : ads.useIads
 v1.22
@@ -57,7 +60,7 @@ Please see the LICENSE file for the full license.
 
 */
 
-Titanium.Admob = Ti.Admob = require('ti.admob');
+Titanium.Admob = Ti.Admob;
 /*
 //iads size 320,50 // 480,32 // ipad : 768,66 // 1024,66
 // Size for the ads to print
@@ -139,8 +142,8 @@ var ads = {};
         if (parseFloat(Titanium.Platform.version) >= 3.2) {
             Ti.API.info('ads.showiAds - build iads');
             var iads = Ti.UI.iOS.createAdView({ 
-                width: 'auto',
-                height: 'auto', 
+                width: Ti.UI.SIZE || 'auto',
+                height: Ti.UI.SIZE || 'auto', 
                 top: ads.iadsTopInit,  
                 borderColor: ads.iAdsBorderColor, 
                 backgroundColor: ads.iAdsBackgroundColor
@@ -282,7 +285,10 @@ var ads = {};
 // ----------------------------------------------------------------------------
     ads.showAdvert = function() {
         if (Titanium.Network.online) {
-            if (ads.useAdmob) { ads.buildAdmob(); }
+            if (ads.useAdmob) { 
+                Ti.Admob = require('ti.admob');
+                ads.buildAdmob(); 
+            }
             if (ads.useIads) { setTimeout(ads.showiAds, ads.iadsStartDelay); }  
         }
         else { // No internet connection. Retry in 30sec
