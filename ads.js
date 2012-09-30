@@ -21,6 +21,9 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v1.25
+    ± Change : ads.objHmax = Ti.Platform.displayCaps.platformHeight - 20; --> for iPhone 5 
+
 v1.24.01
     + Change 'auto' size for iAds to Ti.UI.SIZE to be ready with Ti sdk 2
     ± Only load ti.admob if needed
@@ -76,7 +79,7 @@ var ads = {};
     // || Top ads position (typeMove = 'height')
     ads.topPos = 0; 
     // Max height (px) for the object when no ads (don't mind when typeMove = 'top'
-    ads.objHmax = 460; 
+    ads.objHmax = Ti.Platform.displayCaps.platformHeight - 20; //460; 
     // Top margin (px) for the object to move (optional)
     ads.objMargin = 0; 
     // Type of move for the object (top/height/''). 
