@@ -4,10 +4,11 @@ Ads Auto Switcher - ©BSoft&Co 2012
 This script allows you to use both iAds and Admob at the same place within
 a ©Titanium iOS project.
 
-It works with ti.admob module (1.2 and later) which can be found here :
+It works with ti.admob module (1.3) which can be found here :
 https://github.com/appcelerator/titanium_modules/tree/master/admob/mobile/ios
+or from Appcelerator Market Place.
 
-For now, only iphone's screen size is managed, in portrait orientation.
+For now, only iphone's screen size is managed, in portrait orientation (both iphone 5 and below).
 
 Per default, Admob is always shown, while iAds is shown (on top of admob) and 
 hidden during some seconds.
@@ -20,6 +21,26 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v2.0.008
+    Add how to use
+v2.0.007
+    Add setSingleContextWin() for single context application
+v2.0.006
+    Clean old comments and code
+V2.0.005
+    Add animation curve:Ti.UI.ANIMATION_CURVE_EASE_IN_OUT for showing ads
+v2.0.004
+    Correction when ad banner's position is fixed
+v2.0.003
+    setAdsTopInit to init the top px for both admob and iads
+v2.0.001
+    setInterval() for iAds instead of setTimeout
+v2.0.000
+    Rewrite and simplification for ads.js, renammed as adsAutoSwitcher
+    Compatible with Ti SDK > 2
+    commonJS archi
+v1.25
+    ± Change : ads.objHmax = Ti.Platform.displayCaps.platformHeight - 20; --> for iPhone 5 
 v1.24.01
     + Change 'auto' size for iAds to Ti.UI.SIZE to be ready with Ti sdk 2
     ± Only load ti.admob if needed
@@ -30,30 +51,46 @@ v1.23
 v1.22
     - delete 'adDelay' parameter
 v1.21
-    + ads.typeMove = '' for fixed ads. Set ads.obj2Move = null
+    + ads.alterType = '' for fixed ads. Set ads.obj2Move = null
 V1.2
     + ads.useAdmob = true/false : to enabled or not admob. If false, only iAds 
     is shown
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-
-
 How To use : 
 ------------
-Ti.include('ads.js');
-ads.admobPublisherId = 'myadmobKey'; 
-ads.iAdsShowHide = "iAdsShowHide.xx";
-ads.init(tableViewObj,0,0,'top');
-// --> This inits an ad positionned at top = 0. The tableview name tableViewObj 
-// will be moved down at top = 50 when an ad is visible.
-ads.showAdvert();
-//setTimeout(ads.showAdvert, 2000);    
+    This adsAutoSwitcher prints the ads on top of a tableview object by moving it down
+    The ads are delayed of 2sec
+    ie : Before : tableview top = 0, height = 200, after : top = 50, height = 200
+    
+    var myAds = require ('modules/adsAutoSwither');
+    var ads = new myAds();
+    ads.setAdmobPublisherId('myAdmobKey');
+    ads.setIadsShowHide('iAdsShowHide.Window');
+    ads.setGlobalDelayStart(2000);
+    ads.showAdvert(tableView,'move','top');
+
+    Same as before, but now, the tableview is resized from its top
+    ie : Before : tableview top = 0, height = 200, after : top = 50, height = 150
+    [...]
+    ads.showAdvert(tableView,'resize','top');
+
+    Same as before, but now, the tableview is resized from its bottom
+    ie : Before : tableview top = 0, height = 200, after : top = 0, height = 150
+    so bottom is now 150
+    [...]
+    ads.showAdvert(tableView,'resize','bottom');
+
+    Fixed banner at top = 120. No UI object resized or moved
+    [...]
+    ads.setAdsTopInit(120);
+    ads.showAdvert(tableView,'','');
 -------------------------------------------------------------------------------
+
+
 -------------------------------------------------------------------------------
-
-
-
 -------------------------------------------------------------------------------
 Ads Auto Switcher is licensed under the Apache Public License (Version 2). 
 Please see the LICENSE file for the full license.
-
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
