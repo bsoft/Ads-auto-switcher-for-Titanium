@@ -21,6 +21,11 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v2.0.010
+    better init for _iads var ;)
+    extra iads and admob parameters now privates
+v2.0.009
+    change log level from info to debug
 v2.0.008
     Add how to use
 v2.0.007

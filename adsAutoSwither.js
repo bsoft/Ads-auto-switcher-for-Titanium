@@ -1,7 +1,7 @@
 /*
 Ads Auto Switcher - ©BSoft&Co 2012
 ----------------------------------
-v2.0.008
+v2.0.010
 
 This script allows you to use both iAds and Admob at the same place within
 a ©Titanium iOS project.
@@ -137,53 +137,73 @@ function AdsAutoSwither() {
         _admobPublisherId = str;    
     }; 
     
-    // -- Admob extra public parameters -- // 
+    // -- Admob extra parameters -- // 
     /**
      *  Date of birth, to better target the ads, new Date(1985, 10, 1, 12, 1, 1)
      */
-    this.adDateOfBirth = '';
-    
+    var _adDateOfBirth = '';
+    this.setAdDateOfBirth = function(d) {
+        _adDateOfBirth = d;
+    };
     /**
      *  Gender 'male' or 'female'
      */
-    this.adGender  = '';
-    
+    var _adGender  = '';
+    this.setAdGender = function(g) {
+        _adGender = g;    
+    };
     /**
      *  Keywords about the ads to print
      */
-    this.adKeywords = '';
+    var _adKeywords = '';
+    this.setAdKeywords = function(k) {
+        _adKeywords = k;
+    };
 
     /**
      *  Test mode for admob
      */
-    this.adTesting = false;
+    var _adTesting = false;
+    this.setAdTesting = function(b) {
+        _adTesting = b;
+    };
 
     /**
      *  admob's backgroundColor 
      */
-    this.adBackgroundColor =  "#FDFEFD";
-
+    var _adBackgroundColor =  "#FDFEFD";
+    this.setAdBackgroundColor = function(c) {
+        _adBackgroundColor = c;    
+    };
 
     // --   iAds extra public parameters     -- // 
     /**
      *  iAds's border color
      */
-    this.iAdsBorderColor = '#FDFEFD';
+    var _iAdsBorderColor = '#FDFEFD';
+    this.setIAdsBorderColor = function(c) {
+        _iAdsBorderColor = c;    
+    };
     
     /**
      *  iAds's backgroundColor
      */
-    this.iAdsBackgroundColor = '#FDFEFD';
-    
+    var _iAdsBackgroundColor = '#FDFEFD';
+    this.setIAdsBackgroundColor = function(c) {
+        _iAdsBackgroundColor = c;    
+    };
     /**
      *  How long iAd stay visible (milliseconds)
      */
-    this.iAdsTimeToShow = 15000;
+    var _iAdsTimeToShowHide = 30000;//15000;
+    this.setIAdsTimeToShow = function(ms){
+        _iAdsTimeToShow = ms;    
+    };
 
     /** 
      *  How long iAd is hidden (milliseconds)
      */
-    this.iAdsTimeToHide = 30000;
+    //this.iAdsTimeToHide = 30000;
     
     
     /**
@@ -219,7 +239,7 @@ function AdsAutoSwither() {
      */
     var _objUIinitTop, _objUIinitBottom, _objUIinitHeight; 
 
-    var _admob = null;
+    var _admob = null, _iads = null;
 // ----------------------------------------------------------------------------
 
 
@@ -248,28 +268,28 @@ function AdsAutoSwither() {
     var _buildIads = function() {
         var firstRun = true;
         if (parseFloat(Titanium.Platform.version) >= 3.2) {
-            Ti.API.info('ads.showiAds - build iads');
-            var _iads = Ti.UI.iOS.createAdView({ 
+            Ti.API.debug('ads.showiAds - build iads; this.iAdsTimeToShow:'+_iAdsTimeToShowHide);
+            _iads = Ti.UI.iOS.createAdView({ 
                 width: Ti.UI.SIZE || 'auto',
                 height: Ti.UI.SIZE || 'auto', 
                 top: _adsTopInit,  
-                borderColor: this.iAdsBorderColor, 
-                backgroundColor: this.iAdsBackgroundColor
+                borderColor: _iAdsBorderColor, 
+                backgroundColor: _iAdsBackgroundColor
             });
             _iads.addEventListener('load', function(){ 
-                Ti.API.info("ads.showiAds - iads loaded. First Run ? :"+firstRun);
+                Ti.API.debug("ads.showiAds - iads loaded. First Run ? :"+firstRun);
                 _iAdsVisible = true;
                 if (firstRun) {
-                    Ti.API.info("ads.showiAds - First iAds run : True");
+                    Ti.API.debug("ads.showiAds - First iAds run : True");
                     firstRun = false;
                 }
                 else {
-                    Ti.API.info("ads.showiAds - First iAds run ? : False");
+                    Ti.API.debug("ads.showiAds - First iAds run ? : False");
                 }
-                timer=setInterval(_showIads, this.iAdsTimeToShow);
+                timer=setInterval(function(){_showIads();}, _iAdsTimeToShowHide);
             });
             _iads.addEventListener('error', function(e){
-                Ti.API.info("ads.showiAds - iads error :"+e.message+ " --- adMobVisible="+_adMobVisible);
+                Ti.API.debug("ads.showiAds - iads error :"+e.message+ " --- adMobVisible="+_adMobVisible);
                 if (_iAdsVisible &&  _alterType != '') {
                     if (_adMobVisible) {
                         if (_alterType === 'move') {
@@ -307,13 +327,13 @@ function AdsAutoSwither() {
 
 // ----------------------------------------------------------------------------
     var _showIads = function() {
-        Ti.API.info("ads.showiAds - Receive iAdsShowHide. ads.iAdsVisible :"+_iAdsVisible + " -- iads.visible: "+_iads.visible+ " -- ads.adMobVisible: "+_adMobVisible);
+        Ti.API.debug("ads.showiAds - Receive iAdsShowHide. ads.iAdsVisible :"+_iAdsVisible + " -- iads.visible: "+_iads.visible+ " -- ads.adMobVisible: "+_adMobVisible);
         if (_iAdsVisible && _iads.visible) {
             if (_adMobVisible === false) { 
                 // if admob's not visible, let iAds on screen
             }
             else { // to hide iAds
-                _iads.animate({top:_adsTopInit, duration:500}, function() { _iads.hide(); Ti.API.info("ads.showiAds - hide iads"); });
+                _iads.animate({top:_adsTopInit, duration:500}, function() { _iads.hide(); Ti.API.debug("ads.showiAds - hide iads"); });
             }
         }   
         else { // to show iAds
@@ -335,7 +355,7 @@ function AdsAutoSwither() {
                 }
             }
             _iads.show();
-            Ti.API.info("ads.showiAds - iads show");
+            Ti.API.debug("ads.showiAds - iads show");
             if (_alterFrom === 'top') {
                 _iads.animate({top:_objUIinitTop,duration:500,curve:Ti.UI.ANIMATION_CURVE_EASE_IN_OUT});
             } else if (_alterFrom === 'bottom') {
@@ -349,18 +369,18 @@ function AdsAutoSwither() {
 // ----------------------------------------------------------------------------
     var _buildAdmob = function() {
         if (_admob === null) {
-            Ti.API.info("ads.buildAdmob - try buildAdmob - ");
+            Ti.API.debug("ads.buildAdmob - try buildAdmob - this.adTesting"+_adTesting);
             _admob = Ti.Admob.createView({        
                 publisherId: _admobPublisherId, // required   
                 top: _adsTopInit,
                 left: 0,
                 width: Ti.Platform.displayCaps.getPlatformWidth(), //320, // required
                 height: 50, // required
-                testing: this.adTesting,
-                adBackgroundColor: this.adBackgroundColor,
-                dateOfBirth: this.adDateOfBirth, //new Date(1985, 10, 1, 12, 1, 1),
-                gender: this.adGender, //'male',
-                keywords: this.adKeywords, //'',
+                testing: _adTesting,
+                adBackgroundColor: _adBackgroundColor,
+                dateOfBirth: _adDateOfBirth, //new Date(1985, 10, 1, 12, 1, 1),
+                gender: _adGender, //'male',
+                keywords: _adKeywords, //'',
                 refreshAd:15.0 //not working with actual ti.admob module (1.3), set refresh time within admob site
             });
             _admob.addEventListener('didFailToReceiveAd', function() {
@@ -371,10 +391,10 @@ function AdsAutoSwither() {
                 }
                 _adMobVisible = false;
                 setTimeout(_buildAdmob, 10000);
-                Ti.API.info("ads.buildAdmob - admob error : didFailToReceiveAd. Retry in 10s. adMobVisible:"+_adMobVisible);
+                Ti.API.debug("ads.buildAdmob - admob error : didFailToReceiveAd. Retry in 10s. adMobVisible:"+_adMobVisible);
             });
             _admob.addEventListener('didReceiveAd', function() {
-                Ti.API.info("ads.buildAdmob - admob event : didReceiveAd");
+                Ti.API.debug("ads.buildAdmob - admob event : didReceiveAd");
                 _showAdmob();
             });
             try {
@@ -417,7 +437,7 @@ function AdsAutoSwither() {
             }
             catch (e) {
                 _adMobVisible = false;
-                Ti.API.info("ads.showAdmob - catch admob error showAdmob");
+                Ti.API.debug("ads.showAdmob - catch admob error showAdmob");
                 setTimeout(_buildAdmob, 10000);
             }
         }
@@ -444,7 +464,7 @@ function AdsAutoSwither() {
                 if (_objUIinitTop == 'undefined') {
 //                    _objUIinitTop = _objUIinitBottom - _objUIinitHeight - 50;
                 } 
-                Ti.API.info('_objUIinitTop :'+_objUIinitTop+' -- _objUIinitBottom :'+_objUIinitBottom+' -- _objUIinitHeight :'+_objUIinitHeight);
+                Ti.API.debug('_objMargin:'+_objMargin+ ' -- _objUIinitTop :'+_objUIinitTop+' -- _objUIinitBottom :'+_objUIinitBottom+' -- _objUIinitHeight :'+_objUIinitHeight);
                 setTimeout(function(){
                     if (_useAdmob) { 
                         Ti.Admob = require('ti.admob');
