@@ -21,6 +21,8 @@ really good to stop a refreshing admob.. :/
 
 history:
 --------
+v2.0.011
+    correct the bad value name for var setIAdsTimeToShow method!
 v2.0.010
     better init for _iads var ;)
     extra iads and admob parameters now privates
